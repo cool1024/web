@@ -1,3 +1,18 @@
+export class ViewManager {
+
+    static createManager() {
+        return new ViewManager();
+    }
+
+    showView(viewType, parentNode) {
+        if (this.activeView) {
+            this.activeView.destroy();
+        }
+        this.activeView = View.createView(viewType, parentNode);
+        this.activeView.manager = this;
+    }
+}
+
 export class View {
 
     static createView(viewType, parentNode) {
@@ -5,6 +20,7 @@ export class View {
         view.renderView(parentNode);
         view.initView();
         view.doHandler();
+        return view;
     }
 
     constructor() {
@@ -16,15 +32,22 @@ export class View {
     }
 
     renderView(parentNode) {
-        const tempDom = document.createElement('div');
-        tempDom.innerHTML = this.templateStr;
-        for (let i = 0; i < tempDom.children.length; i++) {
-            parentNode.appendChild(tempDom.children[i]);
-        }
+        parentNode.innerHTML = this.templateStr;
+        // const tempDom = document.createElement('div');
+        // tempDom.innerHTML = this.templateStr;
+        // console.log(tempDom.children);
+        // for (let i = 0; i < tempDom.children.length; i++) {
+        //     parentNode.appendChild(tempDom.children[i]);
+        //     console.log(111);
+        // }
         this.nativeDom = parentNode;
     }
 
     initView() { }
+
+    destroy() {
+        this.nativeDom.innerHTML = '';
+    }
 
     bindHandler(handler) {
         this.handlers.push(handler);
@@ -38,7 +61,15 @@ export class View {
         return document.getElementById(id);
     }
 
+    setClick(id, func) {
+        this.getDom(id).addEventListener('click', func, false);
+    }
+
     appendDom(dom) {
         this.nativeDom.appendChild(dom);
+    }
+
+    showView(viewType) {
+        this.manager.showView(viewType, this.nativeDom);
     }
 }

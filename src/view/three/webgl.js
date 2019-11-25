@@ -1,6 +1,7 @@
-import { View } from '../view';
+import { View } from '../../view';
 import template from './webgl.html';
-import { BasisTextureLoader } from './loader';
+import { OrbitControls } from './OrbitControls';
+
 import {
     PerspectiveCamera,
     Scene,
@@ -8,7 +9,6 @@ import {
     WebGLRenderer,
     Mesh,
     MeshBasicMaterial,
-    sRGBEncoding,
     ImageBitmapLoader,
     CanvasTexture
 } from 'three';
@@ -36,6 +36,7 @@ export class WebGLView extends View {
         this.scene.add(this.cube);
         this.camera.position.z = 5;
 
+        // 加载贴图
         new ImageBitmapLoader()
             .setOptions({ imageOrientation: 'none' })
             .load('lib/textures/material.jpg', bitmap => {
@@ -43,6 +44,10 @@ export class WebGLView extends View {
                 this.material.map = texture;
                 this.material.needsUpdate = true;
             }, null, null);
+
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.target.set(0, 0, 0);
+        this.controls.update();
 
         // 加载贴图素材
         // this.loader = new BasisTextureLoader();
