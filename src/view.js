@@ -8,8 +8,18 @@ export class ViewManager {
         if (this.activeView) {
             this.activeView.destroy();
         }
+        if(!this.historyViews){
+            this.historyViews = [];
+        }
         this.activeView = View.createView(viewType, parentNode);
+        this.historyViews.push(this.activeView);
         this.activeView.manager = this;
+    }
+
+    backView(){
+        this.activeView.destroy();
+        const view = this.historyViews.pop();
+        view && view.resume();
     }
 }
 
@@ -33,20 +43,22 @@ export class View {
 
     renderView(parentNode) {
         parentNode.innerHTML = this.templateStr;
-        // const tempDom = document.createElement('div');
-        // tempDom.innerHTML = this.templateStr;
-        // console.log(tempDom.children);
-        // for (let i = 0; i < tempDom.children.length; i++) {
-        //     parentNode.appendChild(tempDom.children[i]);
-        //     console.log(111);
-        // }
-        this.nativeDom = parentNode;
+        this.nativeDom = parentNode.children[0];
+        this.nativeDoms = [];
+        for (let i = 0; i < parentNode.children.length; i++) {
+            this.nativeDoms.push(parentNode.children[i]);
+        }
+        this.parentNode = parentNode;
     }
 
     initView() { }
 
     destroy() {
-        this.nativeDom.innerHTML = '';
+        this.nativeDoms.forEach(e => this.parentNode.removeChild(e));
+    }
+
+    resume() {
+        this.nativeDoms.forEach(e => this.parentNode.appendChild(e));
     }
 
     bindHandler(handler) {
@@ -66,10 +78,16 @@ export class View {
     }
 
     appendDom(dom) {
-        this.nativeDom.appendChild(dom);
+        this.parentNode.appendChild(dom);
+        this.nativeDoms.push(dom);
     }
 
     showView(viewType) {
-        this.manager.showView(viewType, this.nativeDom);
+        this.manager.showView(viewType, this.parentNode);
     }
+
+    showViewIn(viewType, parentNode) {
+        const manager = ViewManager.createManager();
+        manager.showView(viewType, parentNode);
+    }    
 }
