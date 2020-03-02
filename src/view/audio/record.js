@@ -11,7 +11,6 @@ export class Record {
     getData(time) {
         return this.getMedia().pipe(switchMap(stream => {
             const AudioContext = (window.AudioContext || window.webkitAudioContext);
-            const audioElement = document.getElementById('audio');
             const audioContext = new AudioContext();
             const track = audioContext.createMediaStreamSource(stream);
             const analyser = audioContext.createAnalyser();
