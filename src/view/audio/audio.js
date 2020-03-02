@@ -7,5 +7,9 @@ export class AudioView extends View {
         super();
         this.setTemplate(template);
     }
-    
+
+    initView() {
+        
+    }
+
 }
