@@ -12,17 +12,21 @@ export class TreeView extends View {
         const canvas = this.getDom('tree');
         const context = canvas.getContext('2d');
         canvas.width = 1000;
-        canvas.height = 1000;
+        canvas.height = 500;
         canvas.style = 'transform: rotateX(180deg);background-color:wheat'
-        const draw = () => {
-            context.clearRect(0, 0, 1000, 1000);
-            const rootBranch = Branch.createRootBranch(context, { x: 450, y: 0 }, 4, 150);
-            rootBranch.autoFlower(10, 5);
-            // requestAnimationFrame(draw);
-        };
-        draw();
+        Tree.draw(context, canvas.width, 14, 2, 20, 100)
     }
 }
+
+export class Tree {
+    static draw(context, width, level, minLevel, treeWidth, treeLength) {
+        Branch.createRootBranch(context, { x: width / 2, y: 0 }, treeWidth, treeLength).next(level, minLevel);
+    }
+}
+
+Tree.widthK = 0.7;
+Tree.distanceK = [5, 9];
+Tree.angleK = 0.3;
 
 export class Branch {
 
@@ -30,7 +34,7 @@ export class Branch {
         return new Branch({
             startPoint: rootPoint,
             endPoint: rootPoint,
-            width: width * 2,
+            width: width / Tree.widthK,
             context,
             realAngle: Math.PI / 2
         }).left(0).forward(distance);
@@ -40,7 +44,7 @@ export class Branch {
         this.context = parentBranch.context;
         this.startPoint = Object.assign({}, parentBranch.endPoint);
         this.endPoint = Object.assign({}, this.startPoint);
-        this.width = parentBranch.width * 0.8;
+        this.width = parentBranch.width * Tree.widthK;
         this.parentBranch = parentBranch;
         this.color = 'sienna'
     }
@@ -80,33 +84,16 @@ export class Branch {
         new Flower(this).left(Math.PI / 9 * Math.random() + 0.2).forward(10);
     }
 
-    next(num) {
+    next(num, min) {
         if (num > 0) {
-            let randomLeft = Math.random() + 0.2;
-            randomLeft = randomLeft > 1 ? randomLeft - 0.3 : randomLeft;
-            let randomRight = Math.random() + 0.2;
-            randomRight = randomRight > 1 ? randomRight - 0.3 : randomRight;
-            console.log(randomLeft);
-            new Branch(this).left(Math.PI / 20 * Math.random() + 0.2).forward(randomLeft * 50).next(num - 1);
-            new Branch(this).right(Math.PI / 20 * Math.random() + 0.2).forward(randomRight * 50).next(num - 1);
-        } else {
-            this.flower();
-        }
-    }
-
-    autoFlower(num, min) {
-        if (num > 0) {
-            let randomLeft = Math.random() + 0.2;
-            if (randomLeft > 1 && num < min) {
+            if (Math.random() < 0.5 && num < min) {
                 this.flower();
             } else {
-                new Branch(this).left(Math.PI / 9 * Math.random() + 0.2).forward(randomLeft * 50).autoFlower(num - 1, min);
-            }
-            let randomRight = Math.random() + 0.2;
-            if (randomRight > 1 && num < min) {
-                this.flower();
-            } else {
-                new Branch(this).right(Math.PI / 9 * Math.random() + 0.2).forward(randomRight * 50).autoFlower(num - 1, min);
+                const offset = Tree.distanceK[1] - Tree.distanceK[0];
+                const randomLeft = (Tree.distanceK[0] + Math.random() * offset).toFixed(0) / 10.0;
+                const randomRight = (Tree.distanceK[0] + Math.random() * offset).toFixed(0) / 10.0;
+                new Branch(this).left(Math.PI / 9 * Math.random() + Tree.angleK).forward(randomLeft * this.distance).next(num - 1, min);
+                new Branch(this).right(Math.PI / 9 * Math.random() + Tree.angleK).forward(randomRight * this.distance).next(num - 1, min);
             }
         } else {
             this.flower();
