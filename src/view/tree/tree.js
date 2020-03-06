@@ -131,16 +131,16 @@ export class Seed {
         this.endPoint = {};
         this.endPoint.x = point.x + offsetX;
         this.endPoint.y = point.y + offsetY;
-        this.context.save();
-        this.context.beginPath();
-        this.context.lineWidth = this.width;
-        this.context.moveTo(this.startPoint.x, this.startPoint.y);
-        this.context.lineTo(this.endPoint.x, this.endPoint.y);
+        
         this.drawFly(this.endPoint);
-        this.context.strokeStyle = this.color;
-        this.context.stroke();
-        this.context.closePath();
-        this.context.restore();
+
+        // this.context.save();
+        // this.context.lineWidth = this.width;
+        // this.context.moveTo(this.startPoint.x, this.startPoint.y);
+        // this.context.lineTo(this.endPoint.x, this.endPoint.y);
+        // this.context.strokeStyle = this.color;
+        // this.context.stroke();
+        // this.context.restore();
     }
 
     getEndPoint(point, distance, angle) {
@@ -153,11 +153,31 @@ export class Seed {
     }
 
     drawFly(point) {
-        const leftEndPoint = this.getEndPoint(point, this.distance, Math.PI / 4 + this.angle);
-        const rightEndPoint = this.getEndPoint(point, this.distance, -Math.PI / 4 + this.angle);
-        this.context.moveTo(point.x, point.y);
-        this.context.lineTo(leftEndPoint.x, leftEndPoint.y);
-        this.context.moveTo(point.x, point.y);
-        this.context.lineTo(rightEndPoint.x, rightEndPoint.y);
+        // const leftEndPoint = this.getEndPoint(point, this.distance, Math.PI / 4 + this.angle);
+        // const rightEndPoint = this.getEndPoint(point, this.distance, -Math.PI / 4 + this.angle);
+        // this.context.moveTo(point.x, point.y);
+        // this.context.lineTo(leftEndPoint.x, leftEndPoint.y);
+        // this.context.moveTo(point.x, point.y);
+        // this.context.lineTo(rightEndPoint.x, rightEndPoint.y);
+
+         // draw fly
+         this.context.save();
+         this.context.beginPath();
+         this.context.translate(this.endPoint.x, this.endPoint.y);
+         this.context.rotate(this.angle + 0.6);
+         this.context.ellipse(50, 0, 50, 20, 0, 0, Math.PI * 2);
+
+        //  this.context.fill();
+         this.context.stroke();
+         this.context.closePath();
+         this.context.restore();
+ 
+         this.context.save();
+         this.context.translate(this.endPoint.x, this.endPoint.y);
+         this.context.rotate(this.angle - 0.6);
+         this.context.ellipse(50, 0, 50, 20, 0, 0, Math.PI * 2);
+        //  this.context.fill();
+         this.context.stroke();
+         this.context.restore();
     }
 }
