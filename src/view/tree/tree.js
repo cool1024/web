@@ -13,8 +13,9 @@ export class TreeView extends View {
         const context = canvas.getContext('2d');
         canvas.width = 1000;
         canvas.height = 500;
-        canvas.style = 'transform: rotateX(180deg);background-color:wheat'
-        Tree.draw(context, canvas.width, 14, 2, 20, 100)
+        canvas.style = 'transform: rotateX(180deg);background-color:wheat';
+        // Tree.draw(context, canvas.width, 14, 2, 20, 100);
+        new Seed(context, 100, 20).draw({ x: 300, y: 300 }, Math.PI / 3);
     }
 }
 
@@ -46,7 +47,7 @@ export class Branch {
         this.endPoint = Object.assign({}, this.startPoint);
         this.width = parentBranch.width * Tree.widthK;
         this.parentBranch = parentBranch;
-        this.color = 'sienna'
+        this.color = 'sienna';
     }
 
     right(angle) {
@@ -62,9 +63,9 @@ export class Branch {
     forward(distance) {
         this.distance = distance;
         const offsetX = this.distance * Math.cos(this.realAngle);
-        this.offsetY = this.distance * Math.sin(this.realAngle);
+        const offsetY = this.distance * Math.sin(this.realAngle);
         this.endPoint.x = this.endPoint.x + offsetX;
-        this.endPoint.y = this.endPoint.y + this.offsetY;
+        this.endPoint.y = this.endPoint.y + offsetY;
         this.context.save();
         this.context.beginPath();
         this.context.lineCaps = "round";
@@ -106,5 +107,57 @@ export class Flower extends Branch {
         super(parentBranch);
         this.color = Math.random() > 0.5 ? 'lightcoral' : 'snow';
         this.width = 5;
+    }
+}
+
+export class Seed {
+
+    constructor(context, distance, width) {
+        this.context = context;
+        this.distance = distance;
+        this.width = width;
+        this.color = 'sienna';
+    }
+
+    move(distance, angle) {
+
+    }
+
+    draw(point, angle) {
+        this.angle = angle;
+        const offsetX = this.distance * Math.cos(angle);
+        const offsetY = this.distance * Math.sin(angle);
+        this.startPoint = point;
+        this.endPoint = {};
+        this.endPoint.x = point.x + offsetX;
+        this.endPoint.y = point.y + offsetY;
+        this.context.save();
+        this.context.beginPath();
+        this.context.lineWidth = this.width;
+        this.context.moveTo(this.startPoint.x, this.startPoint.y);
+        this.context.lineTo(this.endPoint.x, this.endPoint.y);
+        this.drawFly(this.endPoint);
+        this.context.strokeStyle = this.color;
+        this.context.stroke();
+        this.context.closePath();
+        this.context.restore();
+    }
+
+    getEndPoint(point, distance, angle) {
+        const endPoint = {};
+        const offsetX = distance * Math.cos(angle);
+        const offsetY = distance * Math.sin(angle);
+        endPoint.x = point.x + offsetX;
+        endPoint.y = point.y + offsetY;
+        return endPoint;
+    }
+
+    drawFly(point) {
+        const leftEndPoint = this.getEndPoint(point, this.distance, Math.PI / 4 + this.angle);
+        const rightEndPoint = this.getEndPoint(point, this.distance, -Math.PI / 4 + this.angle);
+        this.context.moveTo(point.x, point.y);
+        this.context.lineTo(leftEndPoint.x, leftEndPoint.y);
+        this.context.moveTo(point.x, point.y);
+        this.context.lineTo(rightEndPoint.x, rightEndPoint.y);
     }
 }
