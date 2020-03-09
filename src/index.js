@@ -1,5 +1,6 @@
-import { View, ViewManager } from './view';
+import { ViewManager } from './view';
 import { HomeView } from './view/home/home';
+import { TreeView } from './view/tree/tree';
 
 // if ('serviceWorker' in navigator) {
 //     window.addEventListener('load', () => {
@@ -12,4 +13,4 @@ import { HomeView } from './view/home/home';
 // }
 
 const manager = ViewManager.createManager();
-manager.showView(HomeView, document.body);
+manager.showView(TreeView, document.body);

@@ -11,14 +11,18 @@ export class TreeView extends View {
     initView() {
         const canvas = this.getDom('tree');
         const context = canvas.getContext('2d');
-        canvas.width = 1000;
-        canvas.height = 800;
         canvas.style = 'transform: rotateX(180deg);background-color:wheat';
-        // Tree.draw(context, canvas.width, 10, 2, 10, 110);
+        const draw = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            Tree.draw(context, canvas.width, 10, 5, 20, 400);
+        };
+        draw();
+        window.addEventListener('resize', draw);
         // Tree.draw(context, canvas.width, 10, 2, 10, 80);
         // Tree.draw(context, canvas.width, 10, 2, 10, 80);
         // Tree.draw(context, canvas.width, 5  , 2, 10, 80);
-        new Seed(context, 4, 30, 2).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
+        // new Seed(context, 4, 30, 2).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
         // new Seed(context, 1, 6, 1).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
         // new Seed(context, 1, 6, 1).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
         // new Seed(context, 1, 6, 1).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
@@ -90,10 +94,10 @@ export class Branch {
     }
 
     flower() {
-        // new Seed(this.context, 2, 20, 1).draw(this.endPoint, Math.PI / 9 * Math.random() + 0.2 + + this.realAngle);
-        // new Seed(this.context, 2, 20, 1).draw(this.endPoint, - Math.PI / 9 * Math.random() - 0.2 + this.realAngle);
-        new Flower(this).right(Math.PI / 9 * Math.random() + 0.2).forward(15);
-        new Flower(this).left(Math.PI / 9 * Math.random() + 0.2).forward(15);
+        new Seed(this.context, 2, 20, 1).draw(this.endPoint, Math.PI / 9 * Math.random() + 0.2 + + this.realAngle);
+        new Seed(this.context, 2, 20, 1).draw(this.endPoint, - Math.PI / 9 * Math.random() - 0.2 + this.realAngle);
+        // new Flower(this).right(Math.PI / 9 * Math.random() + 0.2).forward(15);
+        // new Flower(this).left(Math.PI / 9 * Math.random() + 0.2).forward(15);
     }
 
     next(num, min) {
@@ -102,8 +106,8 @@ export class Branch {
                 this.flower();
             } else {
                 const offset = Tree.distanceK[1] - Tree.distanceK[0];
-                const randomLeft = (Tree.distanceK[0] + Math.random() * offset).toFixed(0) / 10.0;
-                const randomRight = (Tree.distanceK[0] + Math.random() * offset).toFixed(0) / 10.0;
+                const randomLeft = 0.6; // (Tree.distanceK[0] + Math.random() * offset).toFixed(0) / 10.0;
+                const randomRight = 0.6; // (Tree.distanceK[0] + Math.random() * offset).toFixed(0) / 10.0;
                 new Branch(this).left(Math.PI / 9 * Math.random() + Tree.angleK).forward(randomLeft * this.distance).next(num - 1, min);
                 new Branch(this).right(Math.PI / 9 * Math.random() + Tree.angleK).forward(randomRight * this.distance).next(num - 1, min);
             }
@@ -158,7 +162,7 @@ export class Seed {
         this.endPoint = this.getEndPoint(point, this.width, angle);
 
         this.drawWing(color);
-        this.drawSeed(color);
+        // this.drawSeed(color);
 
         return this;
     }
@@ -195,11 +199,11 @@ export class Seed {
         const wingHeight = this.height;
 
         const gradient = this.context.createLinearGradient(0, 0, wingHeight, wingWidth * 2);
-        gradient.addColorStop(0, 'lightcoral');
-        gradient.addColorStop(1, 'snow');
+        // gradient.addColorStop(0, 'lightcoral');
+        // gradient.addColorStop(1, 'snow');
 
-        // Math.random() > 0.5 ? (gradient.addColorStop(0, 'lightcoral'), gradient.addColorStop(1, 'snow'))
-        //     : (gradient.addColorStop(0, 'snow'), gradient.addColorStop(1, 'lightcoral'));
+        Math.random() > 0.5 ? (gradient.addColorStop(0, 'lightcoral'), gradient.addColorStop(1, 'snow'))
+            : (gradient.addColorStop(0, 'snow'), gradient.addColorStop(1, 'lightcoral'));
 
         this.context.save();
         this.context.lineWidth = 1;
