@@ -12,10 +12,19 @@ export class TreeView extends View {
         const canvas = this.getDom('tree');
         const context = canvas.getContext('2d');
         canvas.width = 1000;
-        canvas.height = 500;
+        canvas.height = 800;
         canvas.style = 'transform: rotateX(180deg);background-color:wheat';
-        // Tree.draw(context, canvas.width, 14, 2, 20, 100);
-        new Seed(context, 100, 20).draw({ x: 300, y: 300 }, Math.PI / 3);
+        // Tree.draw(context, canvas.width, 10, 2, 10, 110);
+        // Tree.draw(context, canvas.width, 10, 2, 10, 80);
+        // Tree.draw(context, canvas.width, 10, 2, 10, 80);
+        // Tree.draw(context, canvas.width, 5  , 2, 10, 80);
+        new Seed(context, 4, 30, 2).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
+        // new Seed(context, 1, 6, 1).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
+        // new Seed(context, 1, 6, 1).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
+        // new Seed(context, 1, 6, 1).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
+        // new Seed(context, 1, 6, 1).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
+        // new Seed(context, 1, 6, 1).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
+        // new Seed(context, 1, 6, 1).draw({ x: 300, y: 500 }, Math.PI / 3).move(100, Math.PI, 'wheat');
     }
 }
 
@@ -25,8 +34,8 @@ export class Tree {
     }
 }
 
-Tree.widthK = 0.7;
-Tree.distanceK = [5, 9];
+Tree.widthK = 0.75;
+Tree.distanceK = [9, 10];
 Tree.angleK = 0.3;
 
 export class Branch {
@@ -81,8 +90,10 @@ export class Branch {
     }
 
     flower() {
-        new Flower(this).right(Math.PI / 9 * Math.random() + 0.2).forward(10);
-        new Flower(this).left(Math.PI / 9 * Math.random() + 0.2).forward(10);
+        // new Seed(this.context, 2, 20, 1).draw(this.endPoint, Math.PI / 9 * Math.random() + 0.2 + + this.realAngle);
+        // new Seed(this.context, 2, 20, 1).draw(this.endPoint, - Math.PI / 9 * Math.random() - 0.2 + this.realAngle);
+        new Flower(this).right(Math.PI / 9 * Math.random() + 0.2).forward(15);
+        new Flower(this).left(Math.PI / 9 * Math.random() + 0.2).forward(15);
     }
 
     next(num, min) {
@@ -112,35 +123,44 @@ export class Flower extends Branch {
 
 export class Seed {
 
-    constructor(context, distance, width) {
+    constructor(context, width, height, offset) {
         this.context = context;
-        this.distance = distance;
         this.width = width;
+        this.height = height;
+        this.offset = offset;
         this.color = 'sienna';
     }
 
-    move(distance, angle) {
-
+    move(distance, angle, bgColor) {
+        if (distance > 0) {
+            this.draw(this.startPoint, this.angle, bgColor);
+            const endPoint = this.getEndPoint(this.startPoint, 1, this.angle);
+            const offsetAngle = angle * (1.0 / distance);
+            this.draw(endPoint, this.angle + offsetAngle);
+            requestAnimationFrame(() => {
+                this.move(distance - 1, angle - offsetAngle, bgColor);
+            });
+        } else {
+            const randomAngle = (0.5 - Math.random()) * Math.PI;
+            const randomDistance = Math.random() * 100;
+            this.move(randomDistance, randomAngle, bgColor);
+        }
     }
 
-    draw(point, angle) {
-        this.angle = angle;
-        const offsetX = this.distance * Math.cos(angle);
-        const offsetY = this.distance * Math.sin(angle);
-        this.startPoint = point;
-        this.endPoint = {};
-        this.endPoint.x = point.x + offsetX;
-        this.endPoint.y = point.y + offsetY;
-        
-        this.drawFly(this.endPoint);
+    flash() {
+        this.draw(this.startPoint, this.angle);
+    }
 
-        // this.context.save();
-        // this.context.lineWidth = this.width;
-        // this.context.moveTo(this.startPoint.x, this.startPoint.y);
-        // this.context.lineTo(this.endPoint.x, this.endPoint.y);
-        // this.context.strokeStyle = this.color;
-        // this.context.stroke();
-        // this.context.restore();
+    draw(point, angle, color) {
+
+        this.angle = angle;
+        this.startPoint = point;
+        this.endPoint = this.getEndPoint(point, this.width, angle);
+
+        this.drawWing(color);
+        this.drawSeed(color);
+
+        return this;
     }
 
     getEndPoint(point, distance, angle) {
@@ -152,32 +172,65 @@ export class Seed {
         return endPoint;
     }
 
-    drawFly(point) {
-        // const leftEndPoint = this.getEndPoint(point, this.distance, Math.PI / 4 + this.angle);
-        // const rightEndPoint = this.getEndPoint(point, this.distance, -Math.PI / 4 + this.angle);
-        // this.context.moveTo(point.x, point.y);
-        // this.context.lineTo(leftEndPoint.x, leftEndPoint.y);
-        // this.context.moveTo(point.x, point.y);
-        // this.context.lineTo(rightEndPoint.x, rightEndPoint.y);
+    drawSeed(color) {
+        this.context.save();
+        this.context.translate(this.startPoint.x, this.startPoint.y);
+        this.context.rotate(this.angle);
+        this.context.beginPath();
+        this.context.ellipse(this.offset, 0, this.height, this.width, 0, 0, Math.PI * 2);
+        this.context.fillStyle = color || this.color;
+        if (color) {
+            this.context.lineWidth = 4;
+            this.context.strokeStyle = color;
+            this.context.stroke();
+        }
+        this.context.fill();
+        this.context.closePath();
+        this.context.restore();
+    }
 
-         // draw fly
-         this.context.save();
-         this.context.beginPath();
-         this.context.translate(this.endPoint.x, this.endPoint.y);
-         this.context.rotate(this.angle + 0.6);
-         this.context.ellipse(50, 0, 50, 20, 0, 0, Math.PI * 2);
+    drawWing(color) {
 
-        //  this.context.fill();
-         this.context.stroke();
-         this.context.closePath();
-         this.context.restore();
- 
-         this.context.save();
-         this.context.translate(this.endPoint.x, this.endPoint.y);
-         this.context.rotate(this.angle - 0.6);
-         this.context.ellipse(50, 0, 50, 20, 0, 0, Math.PI * 2);
-        //  this.context.fill();
-         this.context.stroke();
-         this.context.restore();
+        const wingWidth = this.width * 2;
+        const wingHeight = this.height;
+
+        const gradient = this.context.createLinearGradient(0, 0, wingHeight, wingWidth * 2);
+        gradient.addColorStop(0, 'lightcoral');
+        gradient.addColorStop(1, 'snow');
+
+        // Math.random() > 0.5 ? (gradient.addColorStop(0, 'lightcoral'), gradient.addColorStop(1, 'snow'))
+        //     : (gradient.addColorStop(0, 'snow'), gradient.addColorStop(1, 'lightcoral'));
+
+        this.context.save();
+        this.context.lineWidth = 1;
+        this.context.translate(this.endPoint.x, this.endPoint.y);
+        this.context.rotate(this.angle + 0.6);
+        this.context.beginPath();
+        this.context.moveTo(wingHeight * 2, 0);
+        this.context.ellipse(wingHeight, 0, wingHeight, wingWidth, 0, 0, Math.PI * 2);
+        this.context.fillStyle = color || gradient;
+        if (color) {
+            this.context.lineWidth = 1;
+            this.context.strokeStyle = color;
+            this.context.stroke();
+        }
+        this.context.fill();
+        this.context.restore();
+
+        this.context.save();
+        this.context.lineWidth = 1;
+        this.context.translate(this.endPoint.x, this.endPoint.y);
+        this.context.rotate(this.angle - 0.6);
+        this.context.beginPath();
+        this.context.moveTo(wingHeight * 2, 0);
+        this.context.ellipse(wingHeight, 0, wingHeight, wingWidth, 0, 0, Math.PI * 2);
+        this.context.fillStyle = color || gradient;
+        if (color) {
+            this.context.lineWidth = 1;
+            this.context.strokeStyle = color;
+            this.context.stroke();
+        }
+        this.context.fill();
+        this.context.restore();
     }
 }
