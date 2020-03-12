@@ -1,7 +1,7 @@
 import { BaseDraw, Flower } from "./flower";
 
 export const BranchConfig = {
-    branchWidthK: 0.6,
+    branchWidthK: 0.8,
     branchColor: 'sienna',
 };
 
@@ -18,8 +18,13 @@ export class Branch extends BaseDraw {
         }).left(0);
     }
 
-    constructor(parentBranch) {
-        super(parentBranch.context, parentBranch.width * BranchConfig.branchWidthK, parentBranch.height, BranchConfig.branchColor);
+    constructor(parentBranch, widthK) {
+        widthK = widthK || BranchConfig.branchWidthK;
+        const width = parentBranch.width * widthK;
+        let randomHK = Math.random();
+        randomHK = randomHK < 0.7 ? 0.7 : randomHK;
+        const height = parentBranch.height * randomHK;
+        super(parentBranch.context, width, height, BranchConfig.branchColor);
         this.startPoint = Object.assign({}, parentBranch.endPoint);
         this.endPoint = Object.assign({}, this.startPoint);
         this.parentBranch = parentBranch;
@@ -50,14 +55,14 @@ export class Branch extends BaseDraw {
     }
 
     flower() {
-        Flower.createFromBranch(this, 2, 20).setAngle(Math.PI / 9 * Math.random() + this.realAngle).draw();
-        Flower.createFromBranch(this, 2, 20).setAngle(-Math.PI / 9 * Math.random() + this.realAngle).draw();
+        Flower.createFromBranch(this, 2, 10).setAngle(Math.PI / 10 * Math.random() + this.realAngle).draw();
+        Flower.createFromBranch(this, 2, 10).setAngle(-Math.PI / 10 * Math.random() + this.realAngle).draw();
     }
 
     growUp(num) {
         if (num > 0) {
-            new Branch(this).left(Math.PI / 6 * Math.random()).draw().growUp(num - 1);
-            new Branch(this).right(Math.PI / 6 * Math.random()).draw().growUp(num - 1);
+            new Branch(this, (num - 1) / num).left(Math.random() * 0.8).draw().growUp(num - 1);
+            new Branch(this, (num - 1) / num).right(Math.random() * 0.8).draw().growUp(num - 1);
         } else {
             this.flower();
         }

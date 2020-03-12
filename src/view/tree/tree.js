@@ -17,12 +17,12 @@ export class TreeView extends View {
         const draw = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            // Tree.draw(context, canvas.width, 5, 10, 100);
-            new Seed(context, 4, 20, ['lightcoral', 'snow', 'sienna'])
-                .setPosition({ x: 300, y: 500 })
-                .setWingAngle(0.6)
-                // .draw()
-                .move(100, Math.PI, 'wheat');
+            Tree.draw(context, canvas.width, 10, 15, 120);
+            // new Seed(context, 4, 20, ['lightcoral', 'snow', 'sienna'])
+            //     .setPosition({ x: 300, y: 500 })
+            //     .setWingAngle(0.6)
+            //     // .draw()
+            //     .move(100, Math.PI, 'wheat');
         };
         draw();
         window.addEventListener('resize', draw);
