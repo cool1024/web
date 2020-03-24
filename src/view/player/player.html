@@ -1,0 +1,214 @@
+<style>
+    .iconfont {
+        font-size: 1.2rem;
+    }
+
+    .view-content,
+    .view-footbar {
+        background-color: rgba(0, 0, 0, 0.49);
+        position: relative;
+    }
+
+    .music-headbar {
+        background: rgba(253, 253, 253, 0.05);
+        line-height: 2;
+    }
+
+    .music-background {
+        background-size: cover;
+        filter: blur(10px);
+        position: absolute;
+        top: 0;
+        left: 0;
+        ;
+    }
+
+    .music-disk {
+        margin-top: 5rem;
+        width: 16rem;
+        height: 16rem;
+        background: rgba(253, 253, 253, 0.05);
+    }
+
+    .music-disk.active {
+        animation: loop 20s linear infinite;
+    }
+
+    @keyframes loop {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .music-disk-background {
+        background: url(assets/player/play_disc.png) no-repeat center;
+        background-size: cover;
+    }
+
+    .music-disk-background img {
+        width: 12rem;
+        height: 12rem;
+    }
+
+    .music-needle {
+        overflow: hidden;
+        z-index: 2;
+    }
+
+    .music-needle {
+        height: 10rem;
+        position: absolute;
+        width: 100%;
+    }
+
+    .music-needle img {
+        transform: rotateZ(-30deg);
+        transform-origin: 1.2rem 1.2rem;
+        margin-top: -1.4rem;
+        margin-left: -1.4rem;
+        left: 50%;
+        height: 10rem;
+        position: absolute;
+        transition: transform .5s;
+    }
+
+    .play-icon {
+        border: 1px solid rgb(226, 226, 226);
+        color: rgb(226, 226, 226);
+        width: 3.5rem;
+        height: 3.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .play-icon:hover {
+        border: 1px solid white;
+        color: white;
+    }
+
+    .play-icon .iconfont {
+        font-size: 1.5rem;
+    }
+
+    .play-icon.play-icon-main {
+        width: 4.5rem;
+        height: 4.5rem;
+    }
+
+    .play-icon.play-icon-main .iconfont {
+        font-size: 2rem;
+    }
+
+    .play-menu .iconfont {
+        font-size: 2rem;
+        color: rgb(190, 190, 190);
+    }
+
+    .play-menu .iconfont:hover {
+        color: white;
+    }
+
+    .view-footbar {
+        box-shadow: none;
+        min-height: 6rem;
+        justify-content: center;
+    }
+
+    .progress {
+        height: 0.1rem;
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: red;
+        position: relative;
+    }
+
+    .progress-bar::after {
+        content: '';
+        background: red;
+        color: red;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 0.3rem;
+        width: 0.3rem;
+        position: absolute;
+        right: 0rem;
+        top: -0.5rem;
+        border-radius: 50%;
+        border: 0.4rem solid white;
+    }
+
+    .play-progress {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+    }
+
+    .popup-content {
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+    }
+
+    .popup-title {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .playlist-item {
+        line-height: 3rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+<div class="view">
+    <div class="view-content">
+        <div class="music-headbar text-white flex-between p-2 text-truncate">
+            <a onclick="window.history.back()" class="iconfont icon-i-back text-white"></a>
+            <div>
+                <div class="__name__">歌曲名称</div>
+                <div class="font-size-sm text-muted __author__">作者</div>
+            </div>
+            <div></div>
+        </div>
+        <div class="music-needle">
+            <img id="musicNeedle" src="assets/player/play_needle.png">
+        </div>
+        <div class="flex-center">
+            <div id="musicDisk" class="music-disk circle p-1">
+                <div class="music-disk-background img-circle flex-center align-items-center w-100 h-100">
+                    <img class="img-circle __picUrl__" src="assets/player/placeholder_disk_play_song.png">
+                </div>
+            </div>
+        </div>
+        <div class="play-progress flex-around align-items-center">
+            <div class="text-white m-4">00:00</div>
+            <div class="progress flex-grow-1">
+                <div class="progress-bar" style="width:70%;"></div>
+            </div>
+            <div class="text-white m-4">03:28</div>
+        </div>
+    </div>
+    <div class="view-footbar align-items-center">
+        <div class="play-menu">
+            <i class="iconfont icon-icon_loop"></i>
+        </div>
+        <div class="play-icon circle ml-4">
+            <i class="iconfont icon-preview __pre__"></i>
+        </div>
+        <div id="btnPlay" class="play-icon circle play-icon-main ml-4 mr-4">
+            <i class="iconfont icon-start"></i>
+        </div>
+        <div class="play-icon circle mr-4 __next__">
+            <i class="iconfont icon-next"></i>
+        </div>
+        <div class="play-menu __menu__">
+            <i class="iconfont icon-category"></i>
+        </div>
+    </div>
+</div>

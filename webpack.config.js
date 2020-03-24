@@ -24,7 +24,9 @@ module.exports = {
         new CleanWebpackPlugin(),
         new CopyWebpackPlugin([
             'index.html',
-            { from: 'src/lib', to: 'lib' }
+            'index.css',
+            { from: 'src/lib', to: 'lib' },
+            { from: 'src/assets', to: 'assets' }
         ]),
         new WorkboxPlugin.GenerateSW({
             clientsClaim: true,

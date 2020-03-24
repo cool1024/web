@@ -8,7 +8,7 @@ export class ViewManager {
         if (this.activeView) {
             this.activeView.destroy();
         }
-        if(!this.historyViews){
+        if (!this.historyViews) {
             this.historyViews = [];
         }
         this.activeView = View.createView(viewType, parentNode);
@@ -16,7 +16,7 @@ export class ViewManager {
         this.activeView.manager = this;
     }
 
-    backView(){
+    backView() {
         this.activeView.destroy();
         const view = this.historyViews.pop();
         view && view.resume();
@@ -77,6 +77,18 @@ export class View {
         this.getDom(id).addEventListener('click', func, false);
     }
 
+    addStyleClass(id, ...className) {
+        this.getDom(id).classList.add(className);
+    }
+
+    removeStyleClass(id, ...className) {
+        this.getDom(id).classList.remove(className);
+    }
+
+    setStyleAttr(id, attr, styleStr) {
+        this.getDom(id).style[attr] = styleStr;
+    }
+
     appendDom(dom) {
         this.parentNode.appendChild(dom);
         this.nativeDoms.push(dom);
@@ -89,5 +101,5 @@ export class View {
     showViewIn(viewType, parentNode) {
         const manager = ViewManager.createManager();
         manager.showView(viewType, parentNode);
-    }    
+    }
 }
