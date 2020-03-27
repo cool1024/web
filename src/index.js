@@ -2,7 +2,7 @@ import { ViewManager } from './view';
 import { PlayerView } from './view/player/player';
 // import { FormView } from './view/form/form';
 // import { HomeView } from './view/home/home';
-// import { TreeView } from './view/tree/tree';
+import { TreeView } from './view/tree/tree';
 
 // if ('serviceWorker' in navigator) {
 //     window.addEventListener('load', () => {
@@ -15,4 +15,4 @@ import { PlayerView } from './view/player/player';
 // }
 
 const manager = ViewManager.createManager();
-manager.showView(PlayerView, document.body);
+manager.showView(TreeView, document.body);

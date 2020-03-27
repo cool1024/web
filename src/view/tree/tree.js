@@ -2,6 +2,7 @@ import { View } from "../../view";
 import template from './tree.html';
 import { Branch } from "./branch";
 import { Seed } from "./seed";
+import { HeartTree } from "./heartTree";
 
 export class TreeView extends View {
 
@@ -17,7 +18,8 @@ export class TreeView extends View {
         const draw = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            Tree.draw(context, canvas.width, 10, 15, 120);
+            new HeartTree({ x: canvas.width / 2, y: 0 }, 40, 500).bindContext(context).draw();
+            // Tree.draw(context, canvas.width, 10, 15, 120);
             // new Seed(context, 4, 20, ['lightcoral', 'snow', 'sienna'])
             //     .setPosition({ x: 300, y: 500 })
             //     .setWingAngle(0.6)
