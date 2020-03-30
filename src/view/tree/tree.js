@@ -2,7 +2,8 @@ import { View } from "../../view";
 import template from './tree.html';
 import { Branch } from "./branch";
 import { Seed } from "./seed";
-import { HeartTree } from "./heartTree";
+import { HeartTree, Heart } from "./heartTree";
+import { FlowerConfig } from "./flower";
 
 export class TreeView extends View {
 
@@ -18,9 +19,18 @@ export class TreeView extends View {
         const draw = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            new HeartTree({ x: canvas.width / 2, y: 0 }, 40, 200)
+            // new HeartTree({ x: canvas.width / 2, y: 0 }, 10, 100)
+            //     .bindContext(context)
+            //     .prepareTree(4)
+            //     .drawObs()
+            //     .subscribe();
+
+            new Heart({ x: canvas.width / 2, y: canvas.height / 2 }, 0, 0)
+                .setR(10)
+                .setRate(100)
                 .bindContext(context)
-                .prepareTree(5).draw();
+                .setColorConfig(FlowerConfig.DEFAULT_COLORS)
+                .draw();
             // Tree.draw(context, canvas.width, 10, 15, 120);
             // new Seed(context, 4, 20, ['lightcoral', 'snow', 'sienna'])
             //     .setPosition({ x: 300, y: 500 })
@@ -29,7 +39,7 @@ export class TreeView extends View {
             //     .move(100, Math.PI, 'wheat');
         };
         draw();
-        window.addEventListener('resize', draw);
+        // window.addEventListener('resize', draw);
     }
 }
 

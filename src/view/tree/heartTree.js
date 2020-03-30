@@ -1,5 +1,5 @@
-import { interval, concat, of } from 'rxjs';
-import { take, tap } from 'rxjs/operators';
+import { interval, concat } from 'rxjs';
+import { take, tap, takeLast } from 'rxjs/operators';
 import { FlowerConfig } from './flower';
 
 export class BaseDraw {
@@ -51,7 +51,7 @@ export class Branch extends BaseDraw {
     static createFromParent(branch, hK) {
         return new Branch(branch.endPoint, branch.minWidth, Math.ceil(branch.height * hK))
             .bindContext(branch.ctx)
-            .setColorConfig(Object.assign({}, this.colorConfig));
+            .setColorConfig(branch.colorConfig);
     }
 
     afterCreate() {
@@ -73,28 +73,28 @@ export class Branch extends BaseDraw {
 
     drawObs(speed) {
         const drawData = this.drawData();
-        return interval(speed).pipe(take(this.height), tap(i => this.grow(...drawData[i])))
+        return interval(speed).pipe(take(this.height), tap(i => this.grow(...drawData[i])));
     }
 
     createChildren(offsetAngle) {
         this.endPoint = BaseDraw.getEndPoint(this.point, this.height, this.angle);
         return [
-            Branch.createFromParent(this, 0.9).setAngle(this.angle - offsetAngle),
-            Branch.createFromParent(this, 0.9).setAngle(this.angle + offsetAngle)
+            Branch.createFromParent(this, 0.7).setAngle(this.angle - offsetAngle),
+            Branch.createFromParent(this, 0.7).setAngle(this.angle + offsetAngle)
         ];
     }
 
     createFlower() {
-        this.endPoint = BaseDraw.getEndPoint(this.point, this.height, this.angle);
         return [
-            Flower.createFromBranch(this, 2, 10).setAngle(Math.PI / 10 * Math.random() + this.angle),
-            Flower.createFromBranch(this, 2, 10).setAngle(Math.PI / 10 * Math.random() + this.angle)
+            Flower.createFromBranch(this, 2, 10).setAngle(Math.PI / 5 * Math.random() + this.angle),
+            Flower.createFromBranch(this, 2, 10).setAngle(-Math.PI / 5 * Math.random() + this.angle)
         ];
     }
 
     grow(startPoint, r) {
         this.ctx.save();
         this.ctx.fillStyle = this.colorConfig.fillStyle;
+        console.log(this.colorConfig.fillStyle);
         this.ctx.shadowColor = this.colorConfig.shadowColor;
         this.ctx.shadowBlur = this.colorConfig.shadowBlur;
         this.ctx.moveTo(startPoint.x, startPoint.y);
@@ -111,11 +111,14 @@ export class Flower extends BaseDraw {
         return new Flower(parentBranch.point, width, height)
             .setColorConfig(FlowerConfig.DEFAULT_COLORS)
             .setWingAngle(FlowerConfig.DEFAULT_WING_ANGLE)
+            .setPoint(BaseDraw.getEndPoint(parentBranch.point, parentBranch.height, parentBranch.angle))
             .bindContext(parentBranch.ctx);
     }
 
     afterCreate() {
         this.gradientRandomNum = Math.random() > 0.5 ? [0, 1] : [1, 0];
+        this.wingWidth = this.width * 2;
+        this.wingHeight = this.height;
     }
 
     setWingAngle(angle) {
@@ -123,13 +126,12 @@ export class Flower extends BaseDraw {
         return this;
     }
 
-    drawObs() {
+    draw() {
         const gradient = this.ctx.createLinearGradient(0, 0, this.wingHeight, this.wingWidth * 2);
         gradient.addColorStop(0, this.colorConfig[this.gradientRandomNum[0]]);
         gradient.addColorStop(1, this.colorConfig[this.gradientRandomNum[1]]);
         this.drawWing(gradient, this.wingWidth, this.wingHeight, -1);
         this.drawWing(gradient, this.wingWidth, this.wingHeight, 1);
-        return of(this);
     }
 
     drawWing(gradient, wingWidth, wingHeight, k) {
@@ -138,13 +140,60 @@ export class Flower extends BaseDraw {
         this.ctx.rotate(this.angle + this.wingAngle * k);
         this.ctx.beginPath();
         this.ctx.moveTo(wingHeight * 2, 0);
-        this.ctx.ellipse(wingHeight, 0, wingHeight, wingWidth, 0, 0, Math.PI * 2);
         this.ctx.fillStyle = gradient;
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeStyle = this.strokeColor;
-        this.ctx.stroke();
+        this.ctx.ellipse(wingHeight, 0, wingHeight, wingWidth, 0, 0, Math.PI * 2);
         this.ctx.fill();
         this.ctx.closePath();
+        this.ctx.restore();
+    }
+}
+
+export class Heart extends BaseDraw {
+
+    setR(r) {
+        this.r = r;
+        return this;
+    }
+
+    setRate(rate) {
+        this.rate = rate;
+        return this;
+    }
+
+    afterCreate() {
+        this.gradientRandomNum = Math.random() > 0.5 ? [0, 1] : [1, 0];
+    }
+
+    drawData() {
+        const drawData = [];
+        const levelNum = this.rate || 50;
+        for (let i = 0; i < levelNum; i++) {
+            const step = (i / levelNum) * (Math.PI * 2);
+            const point = {
+                x: this.r * (16 * Math.pow(Math.sin(step), 3)),
+                y: this.r * (13 * Math.cos(step) - 5 * Math.cos(2 * step) - 2 * Math.cos(3 * step) - Math.cos(4 * step))
+            };
+            drawData.push(point);
+        }
+        return drawData;
+    }
+
+    draw() {
+        const gradient = this.ctx.createLinearGradient(0, 0, this.r * 10, this.r);
+        gradient.addColorStop(0, this.colorConfig[this.gradientRandomNum[0]]);
+        gradient.addColorStop(1, this.colorConfig[this.gradientRandomNum[1]]);
+        const drawData = this.drawData();
+        console.log(drawData);
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.translate(this.point.x, this.point.y);
+        this.ctx.fillStyle = gradient;
+        drawData.forEach(data => {
+            this.ctx.lineTo(data.x, data.y);
+        });
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.stroke();
         this.ctx.restore();
     }
 }
@@ -153,6 +202,7 @@ export class HeartTree extends BaseDraw {
 
     prepareTree(level) {
         this.branchs = [];
+        this.flowers = [];
         this.rootBranch = new Branch(this.point, this.width, this.height);
         this.rootBranch.setColorConfig({
             fillStyle: 'rgb(35, 31, 32)',
@@ -166,17 +216,20 @@ export class HeartTree extends BaseDraw {
 
     addChildren(parentBranch, level) {
         if (level > 0) {
-            const children = parentBranch.createChildren(0.3);
+            const children = parentBranch.createChildren(0.4);
             this.branchs.push(...children);
             this.addChildren(children[0], level - 1);
             this.addChildren(children[1], level - 1);
         } else {
-            this.branchs.push(...parentBranch.createFlower());
+            this.flowers.push(...parentBranch.createFlower());
         }
     }
 
-    draw() {
-        const drawTasks = this.branchs.map(branch => branch.drawObs(1));
-        concat(...drawTasks).subscribe();
+    drawObs() {
+        const drawTasks = this.branchs.map(item => item.drawObs(1));
+        return concat(...drawTasks).pipe(
+            takeLast(1),
+            tap(_ => this.flowers.forEach(flower => flower.draw()))
+        );
     }
 }
