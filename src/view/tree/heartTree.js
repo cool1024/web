@@ -54,6 +54,11 @@ export class Branch extends BaseDraw {
             .setColorConfig(branch.colorConfig);
     }
 
+    getEndPoint(){
+        this.endPoint = this.endPoint || BaseDraw.getEndPoint(this.point, this.height, this.angle);
+        return this.endPoint;
+    }
+
     afterCreate() {
         this.minWidth = this.width * 0.4;
     }
@@ -77,7 +82,7 @@ export class Branch extends BaseDraw {
     }
 
     createChildren(offsetAngle) {
-        this.endPoint = BaseDraw.getEndPoint(this.point, this.height, this.angle);
+        this.getEndPoint();
         return [
             Branch.createFromParent(this, 0.7).setAngle(this.angle - offsetAngle),
             Branch.createFromParent(this, 0.7).setAngle(this.angle + offsetAngle)
@@ -89,6 +94,10 @@ export class Branch extends BaseDraw {
             Flower.createFromBranch(this, 2, 10).setAngle(Math.PI / 5 * Math.random() + this.angle),
             Flower.createFromBranch(this, 2, 10).setAngle(-Math.PI / 5 * Math.random() + this.angle)
         ];
+    }
+
+    createHeart() {
+        return Heart.createFromBranch(this, 1);
     }
 
     grow(startPoint, r) {
@@ -150,6 +159,19 @@ export class Flower extends BaseDraw {
 
 export class Heart extends BaseDraw {
 
+    static createFromBranch(branch, size) {
+        return new Heart(branch.getEndPoint(), 0, 0)
+            .setR(size)
+            .setRate(100)
+            .setAngle(Math.random())
+            .bindContext(branch.ctx)
+            .setColorConfig({
+                fillStyle: 'rgba(240, 128, 128, 1)',
+                shadowColor: 'rgba(240, 128, 128, 1)',
+                shadowBlur: 20
+            });
+    }
+
     setR(r) {
         this.r = r;
         return this;
@@ -179,21 +201,19 @@ export class Heart extends BaseDraw {
     }
 
     draw() {
-        const gradient = this.ctx.createLinearGradient(0, 0, this.r * 10, this.r);
-        gradient.addColorStop(0, this.colorConfig[this.gradientRandomNum[0]]);
-        gradient.addColorStop(1, this.colorConfig[this.gradientRandomNum[1]]);
         const drawData = this.drawData();
-        console.log(drawData);
         this.ctx.save();
         this.ctx.beginPath();
         this.ctx.translate(this.point.x, this.point.y);
-        this.ctx.fillStyle = gradient;
+        this.ctx.rotate(this.angle);
+        this.ctx.fillStyle = this.colorConfig.fillStyle;
+        this.ctx.shadowColor = this.colorConfig.shadowColor;
+        this.ctx.shadowBlur = this.colorConfig.shadowBlur;
         drawData.forEach(data => {
             this.ctx.lineTo(data.x, data.y);
         });
         this.ctx.closePath();
         this.ctx.fill();
-        this.ctx.stroke();
         this.ctx.restore();
     }
 }
@@ -221,7 +241,8 @@ export class HeartTree extends BaseDraw {
             this.addChildren(children[0], level - 1);
             this.addChildren(children[1], level - 1);
         } else {
-            this.flowers.push(...parentBranch.createFlower());
+            this.flowers.push(parentBranch.createHeart());
+            // this.flowers.push(...parentBranch.createFlower());
         }
     }
 

@@ -19,18 +19,23 @@ export class TreeView extends View {
         const draw = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            // new HeartTree({ x: canvas.width / 2, y: 0 }, 10, 100)
-            //     .bindContext(context)
-            //     .prepareTree(4)
-            //     .drawObs()
-            //     .subscribe();
-
-            new Heart({ x: canvas.width / 2, y: canvas.height / 2 }, 0, 0)
-                .setR(10)
-                .setRate(100)
+            new HeartTree({ x: canvas.width / 2, y: 0 }, 10, 100)
                 .bindContext(context)
-                .setColorConfig(FlowerConfig.DEFAULT_COLORS)
-                .draw();
+                .prepareTree(4)
+                .drawObs()
+                .subscribe();
+
+            // new Heart({ x: canvas.width / 2, y: canvas.height / 2 }, 0, 0)
+            //     .setR(1)
+            //     .setRate(100)
+            //     .bindContext(context)
+            //     .setColorConfig({
+            //         fillStyle: 'rgba(240, 128, 128, 1)',
+            //         shadowColor: 'rgba(240, 128, 128, 1)',
+            //         shadowBlur: 20
+            //     })
+            //     .draw();
+
             // Tree.draw(context, canvas.width, 10, 15, 120);
             // new Seed(context, 4, 20, ['lightcoral', 'snow', 'sienna'])
             //     .setPosition({ x: 300, y: 500 })
