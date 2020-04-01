@@ -1,6 +1,5 @@
-import { interval, concat } from 'rxjs';
-import { take, tap, takeLast } from 'rxjs/operators';
-import { FlowerConfig } from './flower';
+import { concat, Observable } from 'rxjs';
+import { tap, takeLast } from 'rxjs/operators';
 
 export class BaseDraw {
 
@@ -54,7 +53,7 @@ export class Branch extends BaseDraw {
             .setColorConfig(branch.colorConfig);
     }
 
-    getEndPoint(){
+    getEndPoint() {
         this.endPoint = this.endPoint || BaseDraw.getEndPoint(this.point, this.height, this.angle);
         return this.endPoint;
     }
@@ -71,14 +70,38 @@ export class Branch extends BaseDraw {
             const growK = (1.0 * growCx) / this.height;
             growCx++;
             let startPoint = BaseDraw.getEndPoint(this.point, growCx, this.angle);
-            drawTaskParams.push([startPoint, this.width - (growWidth * growK)]);
+            drawTaskParams.push([startPoint, Math.max((this.width - (growWidth * growK)), 1)]);
         }
         return drawTaskParams;
     }
 
-    drawObs(speed) {
+    drawObs() {
         const drawData = this.drawData();
-        return interval(speed).pipe(take(this.height), tap(i => this.grow(...drawData[i])));
+        let i = 0;
+        const action = (obs) => {
+            window.requestAnimationFrame(() => {
+                if (i < drawData.length) {
+                    this.grow(...drawData[i++]);
+                    action(obs);
+                } else {
+                    obs.next();
+                    obs.complete();
+                }
+            });
+        };
+        return Observable.create(obs => action(obs));
+    }
+
+    grow(startPoint, r) {
+        this.ctx.save();
+        this.ctx.fillStyle = this.colorConfig.fillStyle;
+        this.ctx.shadowColor = this.colorConfig.shadowColor;
+        this.ctx.shadowBlur = this.colorConfig.shadowBlur;
+        this.ctx.moveTo(startPoint.x, startPoint.y);
+        this.ctx.arc(startPoint.x, startPoint.y, r, 0, Math.PI * 2);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.restore();
     }
 
     createChildren(offsetAngle) {
@@ -89,37 +112,27 @@ export class Branch extends BaseDraw {
         ];
     }
 
-    createFlower() {
+    createFlower(flowerConfig) {
+        console.log(flowerConfig);
         return [
-            Flower.createFromBranch(this, 2, 10).setAngle(Math.PI / 5 * Math.random() + this.angle),
-            Flower.createFromBranch(this, 2, 10).setAngle(-Math.PI / 5 * Math.random() + this.angle)
+            Flower.createFromBranch(this, flowerConfig.width, flowerConfig.height, flowerConfig.wingAngle, flowerConfig.colors)
+                .setAngle(Math.PI / 5 * Math.random() + this.angle),
+            Flower.createFromBranch(this, flowerConfig.width, flowerConfig.height, flowerConfig.wingAngle, flowerConfig.colors)
+                .setAngle(-Math.PI / 5 * Math.random() + this.angle)
         ];
     }
 
     createHeart() {
         return Heart.createFromBranch(this, 1);
     }
-
-    grow(startPoint, r) {
-        this.ctx.save();
-        this.ctx.fillStyle = this.colorConfig.fillStyle;
-        console.log(this.colorConfig.fillStyle);
-        this.ctx.shadowColor = this.colorConfig.shadowColor;
-        this.ctx.shadowBlur = this.colorConfig.shadowBlur;
-        this.ctx.moveTo(startPoint.x, startPoint.y);
-        this.ctx.arc(startPoint.x, startPoint.y, r, 0, Math.PI * 2);
-        this.ctx.closePath();
-        this.ctx.fill();
-        this.ctx.restore();
-    }
 }
 
 export class Flower extends BaseDraw {
 
-    static createFromBranch(parentBranch, width, height) {
+    static createFromBranch(parentBranch, width, height, wingAngle, colors) {
         return new Flower(parentBranch.point, width, height)
-            .setColorConfig(FlowerConfig.DEFAULT_COLORS)
-            .setWingAngle(FlowerConfig.DEFAULT_WING_ANGLE)
+            .setColorConfig(colors)
+            .setWingAngle(wingAngle)
             .setPoint(BaseDraw.getEndPoint(parentBranch.point, parentBranch.height, parentBranch.angle))
             .bindContext(parentBranch.ctx);
     }
@@ -220,17 +233,20 @@ export class Heart extends BaseDraw {
 
 export class HeartTree extends BaseDraw {
 
-    prepareTree(level) {
+    prepareTree(level, colorConfig) {
         this.branchs = [];
         this.flowers = [];
         this.rootBranch = new Branch(this.point, this.width, this.height);
-        this.rootBranch.setColorConfig({
-            fillStyle: 'rgb(35, 31, 32)',
-            shadowColor: 'rgb(35, 31, 32)',
-            shadowBlur: 2
-        }).setAngle(Math.PI / 2).bindContext(this.ctx);
+        this.rootBranch.setColorConfig(colorConfig)
+            .setAngle(Math.PI / 2)
+            .bindContext(this.ctx);
         this.branchs.push(this.rootBranch);
         this.addChildren(this.rootBranch, level);
+        return this;
+    }
+
+    prepareFlower(width, height, wingAngle, colors) {
+        this.flowerConfig = { width, height, colors, wingAngle };
         return this;
     }
 
@@ -241,8 +257,8 @@ export class HeartTree extends BaseDraw {
             this.addChildren(children[0], level - 1);
             this.addChildren(children[1], level - 1);
         } else {
-            this.flowers.push(parentBranch.createHeart());
-            // this.flowers.push(...parentBranch.createFlower());
+            // this.flowers.push(parentBranch.createHeart());
+            this.flowers.push(...parentBranch.createFlower(this.flowerConfig));
         }
     }
 
@@ -252,5 +268,11 @@ export class HeartTree extends BaseDraw {
             takeLast(1),
             tap(_ => this.flowers.forEach(flower => flower.draw()))
         );
+    }
+}
+
+export class Bloom extends BaseDraw {
+    drawObs() {
+
     }
 }

@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: {
-        index: './src/index.js'
+        index: './src/index.js',
     },
     output: {
         filename: '[name].bundle.js',
@@ -17,6 +17,17 @@ module.exports = {
             {
                 test: /\.html$/,
                 use: 'raw-loader'
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    {
+                        loader: path.resolve(__dirname, 'sassLoader.js'),
+                        options: {
+                            input: path.resolve(__dirname, 'src/view'),
+                        }
+                    }
+                ]
             }
         ]
     },
