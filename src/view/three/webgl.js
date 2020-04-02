@@ -8,6 +8,7 @@ import {
     BoxGeometry,
     WebGLRenderer,
     Mesh,
+    
     MeshBasicMaterial,
     ImageBitmapLoader,
     CanvasTexture

@@ -11,11 +11,20 @@ export class HomeView extends View {
 
     initView() {
         const routeView = this.getDom('view');
-        this.setClick('three', () => {
+        this.setClick('tree', () => {
             import('../tree/tree').then(module => {
                 this.showViewIn(module.TreeView, routeView);
             });
         });
+        this.setClick('player', () => {
+            import('../player/player').then(module => {
+                this.showViewIn(module.PlayerView, routeView);
+            });
+        });
+        this.setClick('cube', () => {
+            import('../three/webgl').then(module => {
+                this.showViewIn(module.WebGLView, routeView);
+            });
+        });
     }
-
 }
