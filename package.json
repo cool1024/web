@@ -33,6 +33,7 @@
     "workbox-webpack-plugin": "^4.3.1"
   },
   "dependencies": {
+    "bootstrap": "^4.4.1",
     "rxjs": "^6.5.4",
     "three": "^0.110.0"
   }

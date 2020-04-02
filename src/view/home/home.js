@@ -26,5 +26,10 @@ export class HomeView extends View {
                 this.showViewIn(module.WebGLView, routeView);
             });
         });
+        this.setClick('form', () => {
+            import('../form/form').then(module => {
+                this.showViewIn(module.FormView, routeView);
+            });
+        });
     }
 }
