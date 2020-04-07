@@ -1,6 +1,8 @@
 import { View } from "../../view";
 import template from './index.html';
+import Sortable from "sortablejs";
 import './bootstrap.scss';
+import './form.scss';
 
 export class FormView extends View {
 
@@ -44,10 +46,11 @@ export class Row {
 
     render(parentDom) {
         const div = document.createElement('div');
-        div.classList.add('row');
+        div.classList.add('row', 'p-3', 'edit');
         parentDom.append(div);
         this.nativeDom = div;
         this.cols.forEach(col => col.render(div));
+        Sortable.create(div, {group: 'shared'});
         return div;
     }
 }
@@ -100,8 +103,9 @@ export class FormInput extends BaseFormInput {
         div.append(input);
         div.append(tips);
 
-        div.classList.add('form-group', `col-${this.colNum}`);
-        input.classList.add('form-control');
+        div.classList.add('form-group', 'edit', `col-${this.colNum}`);
+        input.classList.add('form-control', 'bg-white');
+        input.disabled = true;
         tips.classList.add('form-text');
 
         input.placeholder = this.placeholder;

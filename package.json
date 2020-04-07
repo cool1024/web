@@ -35,6 +35,7 @@
   "dependencies": {
     "bootstrap": "^4.4.1",
     "rxjs": "^6.5.4",
+    "sortablejs": "^1.10.2",
     "three": "^0.110.0"
   }
 }

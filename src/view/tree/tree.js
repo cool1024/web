@@ -19,10 +19,10 @@ export class TreeView extends View {
         const draw = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            new HeartTree({ x: canvas.width / 2, y: 0 }, 10, 100)
+            new HeartTree({ x: canvas.width / 2, y: 0 }, 20, 200)
                 .bindContext(context)
                 .prepareFlower(2, 15, FlowerConfig.DEFAULT_WING_ANGLE, FlowerConfig.DEFAULT_COLORS)
-                .prepareTree(1, {
+                .prepareTree(5, {
                     fillStyle: 'rgb(35, 31, 32)',
                     shadowColor: 'rgb(35, 31, 32)',
                     shadowBlur: 1
