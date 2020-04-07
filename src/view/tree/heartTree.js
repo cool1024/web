@@ -67,7 +67,8 @@ export class Branch extends BaseDraw {
         let growWidth = this.width - this.minWidth;
         const drawTaskParams = [];
         while (growCx < this.height) {
-            const growK = (1.0 * growCx) / this.height;
+            let growK = (1.0 * growCx) / this.height;
+            growK = Animation.sineEaseOut(growK);
             growCx++;
             let startPoint = BaseDraw.getEndPoint(this.point, growCx, this.angle);
             drawTaskParams.push([startPoint, Math.max((this.width - (growWidth * growK)), 1)]);
@@ -113,7 +114,6 @@ export class Branch extends BaseDraw {
     }
 
     createFlower(flowerConfig) {
-        console.log(flowerConfig);
         return [
             Flower.createFromBranch(this, flowerConfig.width, flowerConfig.height, flowerConfig.wingAngle, flowerConfig.colors)
                 .setAngle(Math.PI / 5 * Math.random() + this.angle),
@@ -278,9 +278,17 @@ export class Bloom extends BaseDraw {
 }
 
 export class Animation {
-    static easeOutElastic(x) {
-        const c4 = (2 * Math.PI) / 3;
-        return x === 0 ? 0 : x === 1 ? 1 :
-            Math.pow(2, -10 * x) * Math.sin((x * 10 - 0.75) * c4) + 1;
+
+    static sineEaseOut(t) {
+        return Math.sin(t * Math.PI / 2);
+    }
+
+    static sineEaseIn(t) {
+        t = 1 - t;
+        return 1 - Animation.sineEaseOut(t);
+    }
+
+    static circleEaseIn(t) {
+        return 1 - Math.sqrt(1 - t * t);
     }
 }
