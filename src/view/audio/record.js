@@ -1,5 +1,6 @@
-import { from, interval } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { from } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { Analyser } from './analyser';
 
 export class Record {
 
@@ -9,15 +10,6 @@ export class Record {
     }
 
     getData(time) {
-        return this.getMedia().pipe(switchMap(stream => {
-            const AudioContext = (window.AudioContext || window.webkitAudioContext);
-            const audioContext = new AudioContext();
-            const track = audioContext.createMediaStreamSource(stream);
-            const analyser = audioContext.createAnalyser();
-            analyser.fftSize = 2048;
-            const data = new Uint8Array(analyser.frequencyBinCount);
-            track.connect(analyser);
-            return interval(time).pipe(map(_ => data));
-        }));
+        return this.getMedia().pipe(switchMap(stream => Analyser.createFromStream(stream).getData(time)));
     }
 }

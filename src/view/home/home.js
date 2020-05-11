@@ -31,5 +31,10 @@ export class HomeView extends View {
                 this.showViewIn(module.FormView, routeView);
             });
         });
+        this.setClick('sound',() => {
+            import('../audio/audio').then(module => {
+                this.showViewIn(module.AudioView, routeView);
+            });
+        });
     }
 }
