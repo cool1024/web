@@ -11,6 +11,7 @@ export class Analyser{
             audio.play();
             const obj = new Analyser();
             obj.track = obj.audioContext.createMediaElementSource(audio)
+            obj.track.connect(obj.analyser);
             return obj;
         }))
     }
@@ -18,6 +19,7 @@ export class Analyser{
     static createFromStream(stream){
         const obj = new Analyser();
         obj.track = obj.audioContext.createMediaStreamSource(stream);
+        obj.track.connect(obj.analyser);
         return obj;
     }
 
@@ -25,14 +27,21 @@ export class Analyser{
         const AudioContext = (window.AudioContext || window.webkitAudioContext);
         this.audioContext = new AudioContext();
         this.analyser = this.audioContext.createAnalyser();
-        this.analyser.fftSize = 2048;
+        this.analyser.fftSize = 32768;
     }
 
-    getData(time){
+    getTimeDomainData(time){
         const data = new Uint8Array(this.analyser.frequencyBinCount);
-        this.track.connect(this.analyser);
         return interval(time).pipe(map(_ => {
             this.analyser.getByteTimeDomainData(data);
+            return data;
+        }));
+    }
+
+    getFrequencyData(time){
+        const data = new Uint8Array(this.analyser.frequencyBinCount);
+        return interval(time).pipe(map(_ => {
+            this.analyser.getByteFrequencyData(data);
             return data;
         }));
     }
@@ -40,7 +49,6 @@ export class Analyser{
     getFrequency(time) {
         const data = new Uint8Array(this.analyser.frequencyBinCount);
         const df = 1.0 * this.audioContext.sampleRate / this.analyser.fftSize;
-        this.track.connect(this.analyser);
         return interval(time).pipe(map(_ => {
             this.analyser.getByteFrequencyData(data);
             let f =0
@@ -58,8 +66,8 @@ export class Analyser{
         const musicName = [ 'C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B' ];
         const lineal = 12 * ((Math.log(f) - Math.log(midCF)) / Math.log(2));
         const midi = Math.round(69 + lineal);
-        const name = musicName[midi % 12]
-        const oct = Math.floor(midi / 12) - 1
-        return name + oct
+        const name = musicName[midi % 12];
+        const oct = Math.floor(midi / 12) - 1;
+        return name + oct;
     }
 }

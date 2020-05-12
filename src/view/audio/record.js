@@ -9,7 +9,11 @@ export class Record {
         return from(promise);
     }
 
-    getData(time) {
-        return this.getMedia().pipe(switchMap(stream => Analyser.createFromStream(stream).getData(time)));
+    getTimeDomainData(time) {
+        return this.getMedia().pipe(switchMap(stream => Analyser.createFromStream(stream).getTimeDomainData(time)));
+    }
+
+    getFrequency(time){
+        return this.getMedia().pipe(switchMap(stream => Analyser.createFromStream(stream).getFrequency(time)));
     }
 }
