@@ -3,6 +3,13 @@ import { map, take } from 'rxjs/operators';
 
 export class Analyser{
 
+    static createFromTrackFun(trackFun) {
+        const obj = new Analyser();
+        obj.track = trackFun(obj.audioContext);
+        obj.track.connect(obj.analyser);
+        return obj;
+    }
+
     static createFromUrl(url){
         const audio = new Audio(url);
         audio.controls = true;

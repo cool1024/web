@@ -3,6 +3,7 @@ import template from './audio.html';
 import { Analyser } from "./analyser";
 import { Drawable } from "./drawable";
 import { TextToPicture } from "./text-picture";
+import { MusicNotes } from "./music-notes";
 
 export class AudioView extends View {
 
@@ -17,18 +18,41 @@ export class AudioView extends View {
         //     console.log(data);
         // });
 
-        Analyser.createFromUrl('/assets/apple.mp3').subscribe( analyser => {
+        MusicNotes.create().play(440);
+
+        // const musicNotes = new MusicNotes;
+
+        // const analyser = Analyser.createFromTrackFun(ctx => musicNotes.trackFun(ctx))
+        
+        // analyser.getTimeDomainData(1000 / 20.0).subscribe( data => {
+        //     new Drawable( this.getDom('soundCanvas1')).draw(data, 'black');
+        // });
+
+        // analyser.getFrequencyData(1000 / 20.0).subscribe( data => {
+        //     new Drawable( this.getDom('soundCanvas2')).draw(data.slice(0, data.length / 8), 'black');
+        // });
+
+        // analyser.getFrequency(1000 / 20.0).subscribe( f => {
+        //     const musicName = analyser.getMusicName(f, 440);
+        //     this.showMusicName(musicName);
+        // });
+        
+        // this.setClick('btnMusic', () => {
+        //     musicNotes.play(Math.random() * 100);
+        // });
+
+        // Analyser.createFromUrl('/assets/apple.mp3').subscribe( analyser => {
             // analyser.getTimeDomainData(1000 / 20.0).subscribe( data => {
             //     new Drawable( this.getDom('soundCanvas1')).draw(data, 'black');
             // });
             // analyser.getFrequencyData(1000 / 20.0).subscribe( data => {
             //     new Drawable( this.getDom('soundCanvas2')).draw(data.slice(0, data.length / 8), 'black');
             // });
-            analyser.getFrequency(1000 / 20.0).subscribe( f => {
-                const musicName = analyser.getMusicName(f, 440);
-                this.showMusicName(musicName)
-            })
-        });
+            // analyser.getFrequency(1000 / 20.0).subscribe( f => {
+            //     const musicName = analyser.getMusicName(f, 440);
+            //     this.showMusicName(musicName)
+            // })
+        // });
     }
 
     showMusicName(text){
