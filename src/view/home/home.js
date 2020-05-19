@@ -10,31 +10,29 @@ export class HomeView extends View {
     }
 
     initView() {
-        const routeView = this.getDom('view');
+        const routeView = this.getDom('homeRouteView');
+        routeView.addViewModules([
+            {name: 'TreeView', import: import('../tree/tree')},
+            {name: 'PlayerView', import: import('../player/player')},
+            {name: 'WebGLView', import: import('../three/webgl')},
+            {name: 'FormView', import: import('../form/form')},
+            {name: 'AudioView', import: import('../audio/audio')},
+        ])
+
         this.setClick('tree', () => {
-            import('../tree/tree').then(module => {
-                this.showViewIn(module.TreeView, routeView);
-            });
+            routeView.setAttribute('view', 'TreeView');
         });
         this.setClick('player', () => {
-            import('../player/player').then(module => {
-                this.showViewIn(module.PlayerView, routeView);
-            });
+            routeView.setAttribute('view', 'PlayerView');
         });
         this.setClick('cube', () => {
-            import('../three/webgl').then(module => {
-                this.showViewIn(module.WebGLView, routeView);
-            });
+            routeView.setAttribute('view', 'WebGLView');
         });
         this.setClick('form', () => {
-            import('../form/form').then(module => {
-                this.showViewIn(module.FormView, routeView);
-            });
+            routeView.setAttribute('view', 'FormView');
         });
         this.setClick('sound',() => {
-            import('../audio/audio').then(module => {
-                this.showViewIn(module.AudioView, routeView);
-            });
+            routeView.setAttribute('view', 'AudioView');
         });
     }
 }
