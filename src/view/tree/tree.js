@@ -19,13 +19,13 @@ export class TreeView extends View {
         const draw = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            new HeartTree({ x: canvas.width / 2, y: 0 }, 50, 300)
+            new HeartTree({ x: canvas.width / 2, y: 0 }, 10, 100)
                 .bindContext(context)
                 .prepareFlower(2, 15, FlowerConfig.DEFAULT_WING_ANGLE, FlowerConfig.DEFAULT_COLORS)
-                .prepareTree(0, {
+                .prepareTree(4, {
                     fillStyle: 'rgb(35, 31, 32)',
                     shadowColor: 'rgb(35, 31, 32)',
-                    shadowBlur: 2
+                    shadowBlur: 1
                 })
                 .drawObs()
                 .subscribe();
@@ -42,11 +42,11 @@ export class TreeView extends View {
             // })
             // .draw();
 
-            // Tree.draw(context, canvas.width, 10, 15, 120);
+            // Tree.draw(context, canvas.width, 10, 10, 120);
             // new Seed(context, 4, 20, ['lightcoral', 'snow', 'sienna'])
             //     .setPosition({ x: 300, y: 500 })
             //     .setWingAngle(0.6)
-            //     // .draw()
+            //     .draw()
             //     .move(100, Math.PI, 'wheat');
         };
         draw();
@@ -55,7 +55,7 @@ export class TreeView extends View {
 }
 
 export class Tree {
-    static draw(context, width, level, treeWidth, treeLength) {
+    static xdraw(context, width, level, treeWidth, treeLength) {
         Branch.createRootBranch(context, { x: width / 3, y: 0 }, treeWidth, treeLength).draw().growUp(level);
     }
 }

@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: {
-        index: './src/index.js',
+        index: './src/view/tree/heartTree.js',
     },
     output: {
         filename: '[name].bundle.js',

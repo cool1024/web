@@ -1,5 +1,6 @@
 import { concat, Observable } from 'rxjs';
 import { tap, takeLast } from 'rxjs/operators';
+import { FlowerConfig } from "./flower";
 
 export class BaseDraw {
 
@@ -80,15 +81,22 @@ export class Branch extends BaseDraw {
         const drawData = this.drawData();
         let i = 0;
         const action = (obs) => {
-            window.requestAnimationFrame(() => {
-                if (i < drawData.length) {
-                    this.grow(...drawData[i++]);
-                    action(obs);
-                } else {
-                    obs.next();
-                    obs.complete();
-                }
-            });
+            // window.requestAnimationFrame(() => {
+            //     if (i < drawData.length) {
+            //         this.grow(...drawData[i++]);
+            //         action(obs);
+            //     } else {
+            //         obs.next();
+            //         obs.complete();
+            //     }
+            // });
+            if (i < drawData.length) {
+                this.grow(...drawData[i++]);
+                action(obs);
+            } else {
+                obs.next();
+                obs.complete();
+            }
         };
         return Observable.create(obs => action(obs));
     }
@@ -292,3 +300,18 @@ export class Animation {
         return 1 - Math.sqrt(1 - t * t);
     }
 }
+const canvas = document.getElementById('pad');
+const context = canvas.getContext('2d');
+canvas.style = 'transform: rotateX(180deg);background-color:wheat';
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+new HeartTree({ x: canvas.width / 2, y: 0 }, 50, 300)
+    .bindContext(context)
+    .prepareFlower(2, 15, FlowerConfig.DEFAULT_WING_ANGLE, FlowerConfig.DEFAULT_COLORS)
+    .prepareTree(0, {
+        fillStyle: 'rgb(35, 31, 32)',
+        shadowColor: 'rgb(35, 31, 32)',
+        shadowBlur: 2
+    })
+    .drawObs()
+    .subscribe();
