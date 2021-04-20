@@ -1,0 +1,16 @@
+.bili-banner {
+    position: relative;
+    .layer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        img {
+            height: 9.375vw;
+        }
+    }
+    .ctrl {
+        height: 9.375vw;
+        height: 100%;
+    }
+}

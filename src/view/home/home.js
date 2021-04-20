@@ -17,6 +17,7 @@ export class HomeView extends View {
             {name: 'WebGLView', import: import('../three/webgl')},
             {name: 'FormView', import: import('../form/form')},
             {name: 'AudioView', import: import('../audio/audio')},
+            {name: 'BannerView', import: import('../banner/banner')},
         ])
 
         this.setClick('tree', () => {
@@ -34,5 +35,9 @@ export class HomeView extends View {
         this.setClick('sound',() => {
             routeView.setAttribute('view', 'AudioView');
         });
+        this.setClick('banner',() => {
+            routeView.setAttribute('view', 'BannerView');
+        });
+        routeView.setAttribute('view', 'BannerView');
     }
 }

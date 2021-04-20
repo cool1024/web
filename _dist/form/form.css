@@ -1,0 +1,8 @@
+.form-group {
+  border: 1px dashed transparent; }
+  .form-group:hover {
+    border-color: black; }
+  .form-group.edit {
+    cursor: pointer; }
+    .form-group.edit input {
+      cursor: pointer; }
